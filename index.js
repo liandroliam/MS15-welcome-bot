@@ -1,6 +1,17 @@
 require("dotenv").config();
 
-const { Client, GatewayIntentBits, AttachmentBuilder } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  AttachmentBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  Events
+} = require("discord.js");
 const sharp = require("sharp");
 const path = require("path");
 const cron = require("node-cron");
@@ -67,6 +78,58 @@ async function createWelcomeBanner(member) {
 
   return finalImage;
 }
+
+
+async function createHcBanner(name) {
+  const safeName = name.toUpperCase().slice(0, 24);
+
+const nameSvg = Buffer.from(`
+<svg width="1536" height="864">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'Esports';
+        src: url('assets/fonts/esports.ttf');
+      }
+
+      .name {
+        fill: #f5f5f5;
+        font-size: 170px;
+        font-family: 'Esports';
+        letter-spacing: 6px;
+        font-weight: 900;
+      }
+    </style>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <text
+    x="768"
+    y="335"
+    text-anchor="middle"
+    class="name"
+    filter="url(#glow)">
+      ${safeName}
+  </text>
+</svg>
+`);
+
+  return await sharp(path.join(__dirname, "assets", "hc-template.png"))
+    .resize(1536, 864)
+    .composite([
+      { input: nameSvg, left: 0, top: 0 }
+    ])
+    .png()
+    .toBuffer();
+}
+
 
 
 async function postPoll(channel, text) {
@@ -149,6 +212,78 @@ client.on("guildMemberAdd", async (member) => {
     });
   } catch (error) {
     console.error("Fehler beim Welcome-System:", error);
+  }
+});
+
+client.on("guildMemberUpdate", async (oldMember, newMember) => {
+  const hcRoleId = process.env.HC_MEMBER_ROLE_ID;
+
+  const hadRole = oldMember.roles.cache.has(hcRoleId);
+  const hasRole = newMember.roles.cache.has(hcRoleId);
+
+  if (!hadRole && hasRole) {
+    const channel = await client.channels.fetch(process.env.HC_BANNER_CHANNEL_ID);
+
+    const button = new ButtonBuilder()
+      .setCustomId(`create_hc_banner_${newMember.id}`)
+      .setLabel("Banner erstellen")
+      .setStyle(ButtonStyle.Success);
+
+    const row = new ActionRowBuilder().addComponents(button);
+
+    await channel.send({
+      content: `🎉 ${newMember}, du bist jetzt **Member**! Klicke auf den Button und gib deinen gewünschten Banner-Namen ein.`,
+      components: [row]
+    });
+  }
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (interaction.isButton()) {
+    if (!interaction.customId.startsWith("create_hc_banner_")) return;
+
+    const userId = interaction.customId.replace("create_hc_banner_", "");
+
+    if (interaction.user.id !== userId) {
+      return interaction.reply({
+        content: "Dieses Banner gehört nicht dir.",
+        ephemeral: true
+      });
+    }
+
+    const modal = new ModalBuilder()
+      .setCustomId("hc_banner_modal")
+      .setTitle("Banner erstellen");
+
+    const nameInput = new TextInputBuilder()
+      .setCustomId("banner_name")
+      .setLabel("Welcher Name soll auf dein Banner?")
+      .setStyle(TextInputStyle.Short)
+      .setMaxLength(24)
+      .setRequired(true);
+
+    const row = new ActionRowBuilder().addComponents(nameInput);
+
+    modal.addComponents(row);
+
+    await interaction.showModal(modal);
+  }
+
+  if (interaction.isModalSubmit()) {
+    if (interaction.customId !== "hc_banner_modal") return;
+
+    const bannerName = interaction.fields.getTextInputValue("banner_name");
+
+    const banner = await createHcBanner(bannerName);
+
+    const attachment = new AttachmentBuilder(banner, {
+      name: "hc-banner.png"
+    });
+
+    await interaction.reply({
+      content: `✅ Dein Banner wurde erstellt, ${interaction.user}!`,
+      files: [attachment]
+    });
   }
 });
 
