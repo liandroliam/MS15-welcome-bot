@@ -1,9 +1,10 @@
-```yml
 services:
   ms15-core-bot:
     build: .
     container_name: ms15-core-bot
     restart: unless-stopped
-    env_file:
-      - .env
-```
+    environment:
+      DISCORD_TOKEN: "${DISCORD_TOKEN}"
+      WELCOME_CHANNEL_ID: "${WELCOME_CHANNEL_ID}"
+      RECRUIT_ROLE_ID: "${RECRUIT_ROLE_ID}"
+      CW_CHANNEL_ID: "${CW_CHANNEL_ID}"
