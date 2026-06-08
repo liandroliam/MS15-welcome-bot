@@ -83,43 +83,30 @@ async function createWelcomeBanner(member) {
 async function createHcBanner(name) {
   const safeName = name.toUpperCase().slice(0, 24);
 
-const nameSvg = Buffer.from(`
-<svg width="1536" height="864">
-  <defs>
-    <style>
-      @font-face {
-        font-family: 'Esports';
-        src: url('assets/fonts/esports.ttf');
-      }
+  const nameSvg = Buffer.from(`
+    <svg width="1536" height="864">
+      <defs>
+        <filter id="shadow">
+          <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#7CFF3A"/>
+        </filter>
+      </defs>
 
-      .name {
-        fill: #f5f5f5;
-        font-size: 170px;
-        font-family: 'Esports';
-        letter-spacing: 6px;
-        font-weight: 900;
-      }
-    </style>
-
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
-
-  <text
-    x="768"
-    y="335"
-    text-anchor="middle"
-    class="name"
-    filter="url(#glow)">
-      ${safeName}
-  </text>
-</svg>
-`);
+      <text
+        x="768"
+        y="330"
+        text-anchor="middle"
+        font-family="Impact, Arial Black, sans-serif"
+        font-size="130"
+        font-weight="900"
+        letter-spacing="6"
+        fill="#f5f5f5"
+        stroke="#7CFF3A"
+        stroke-width="3"
+        filter="url(#shadow)">
+        ${safeName}
+      </text>
+    </svg>
+  `);
 
   return await sharp(path.join(__dirname, "assets", "hc-template.png"))
     .resize(1536, 864)
