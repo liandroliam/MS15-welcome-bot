@@ -203,6 +203,11 @@ client.on("guildMemberAdd", async (member) => {
 client.on("guildMemberUpdate", async (oldMember, newMember) => {
   console.log("guildMemberUpdate ausgelöst:", newMember.user.tag);
 
+  console.log("HC_ROLE_ID aus ENV:", process.env.HC_MEMBER_ROLE_ID);
+  console.log("Hatte Rolle vorher:", oldMember.roles.cache.has(process.env.HC_MEMBER_ROLE_ID));
+  console.log("Hat Rolle jetzt:", newMember.roles.cache.has(process.env.HC_MEMBER_ROLE_ID));
+  console.log("Alle Rollen jetzt:", newMember.roles.cache.map(r => `${r.name}: ${r.id}`));
+
   const hcRoleId = process.env.HC_MEMBER_ROLE_ID;
 
   const hadRole = oldMember.roles.cache.has(hcRoleId);
