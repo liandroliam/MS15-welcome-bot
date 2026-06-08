@@ -90,7 +90,7 @@ async function createHcBanner(name) {
         x="768"
         y="320"
         text-anchor="middle"
-        font-family="Arial Black, Arial, sans-serif"
+        font-family="sans-serif"
         font-size="125"
         font-weight="900"
         letter-spacing="5"
