@@ -1,4 +1,5 @@
 require("dotenv").config();
+console.log(process.env.HC_MEMBER_ROLE_ID);
 
 const {
   Client,
