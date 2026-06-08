@@ -201,6 +201,8 @@ client.on("guildMemberAdd", async (member) => {
 });
 
 client.on("guildMemberUpdate", async (oldMember, newMember) => {
+  console.log("guildMemberUpdate ausgelöst:", newMember.user.tag);
+
   const hcRoleId = process.env.HC_MEMBER_ROLE_ID;
 
   const hadRole = oldMember.roles.cache.has(hcRoleId);
