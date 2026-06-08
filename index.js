@@ -80,6 +80,7 @@ async function createWelcomeBanner(member) {
 }
 
 
+```js
 async function createHcBanner(name) {
   const safeName = name.toUpperCase().slice(0, 24);
 
@@ -87,20 +88,24 @@ async function createHcBanner(name) {
     <svg width="1536" height="864">
       <defs>
         <filter id="shadow">
-          <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#7CFF3A"/>
+          <feDropShadow
+            dx="0"
+            dy="0"
+            stdDeviation="10"
+            flood-color="#76ff03"/>
         </filter>
       </defs>
 
       <text
         x="768"
-        y="330"
+        y="320"
         text-anchor="middle"
-        font-family="Impact, Arial Black, sans-serif"
-        font-size="130"
+        font-family="Impact"
+        font-size="125"
         font-weight="900"
-        letter-spacing="6"
+        letter-spacing="5"
         fill="#f5f5f5"
-        stroke="#7CFF3A"
+        stroke="#76ff03"
         stroke-width="3"
         filter="url(#shadow)">
         ${safeName}
@@ -111,11 +116,17 @@ async function createHcBanner(name) {
   return await sharp(path.join(__dirname, "assets", "hc-template.png"))
     .resize(1536, 864)
     .composite([
-      { input: nameSvg, left: 0, top: 0 }
+      {
+        input: nameSvg,
+        left: 0,
+        top: 0
+      }
     ])
     .png()
     .toBuffer();
 }
+```
+
 
 
 
