@@ -80,34 +80,22 @@ async function createWelcomeBanner(member) {
 }
 
 
-```js
 async function createHcBanner(name) {
   const safeName = name.toUpperCase().slice(0, 24);
 
   const nameSvg = Buffer.from(`
     <svg width="1536" height="864">
-      <defs>
-        <filter id="shadow">
-          <feDropShadow
-            dx="0"
-            dy="0"
-            stdDeviation="10"
-            flood-color="#76ff03"/>
-        </filter>
-      </defs>
-
       <text
         x="768"
         y="320"
         text-anchor="middle"
-        font-family="Impact"
+        font-family="Arial Black, Arial, sans-serif"
         font-size="125"
         font-weight="900"
         letter-spacing="5"
         fill="#f5f5f5"
         stroke="#76ff03"
-        stroke-width="3"
-        filter="url(#shadow)">
+        stroke-width="3">
         ${safeName}
       </text>
     </svg>
@@ -125,7 +113,6 @@ async function createHcBanner(name) {
     .png()
     .toBuffer();
 }
-```
 
 
 
