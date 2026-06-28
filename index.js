@@ -95,7 +95,7 @@ async function createHcBanner(name) {
         font-weight="900"
         letter-spacing="5"
         fill="#f5f5f5"
-        stroke="#76ff03"
+        stroke="#ff0000"
         stroke-width="3">
         ${safeName}
       </text>
