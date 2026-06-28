@@ -202,32 +202,45 @@ client.on("guildMemberAdd", async (member) => {
 });
 
 client.on("guildMemberUpdate", async (oldMember, newMember) => {
-  console.log("guildMemberUpdate ausgelöst:", newMember.user.tag);
+  try {
+    console.log("guildMemberUpdate ausgelöst:", newMember.user.tag);
 
-  console.log("HC_ROLE_ID aus ENV:", process.env.HC_MEMBER_ROLE_ID);
-  console.log("Hatte Rolle vorher:", oldMember.roles.cache.has(process.env.HC_MEMBER_ROLE_ID));
-  console.log("Hat Rolle jetzt:", newMember.roles.cache.has(process.env.HC_MEMBER_ROLE_ID));
-  console.log("Alle Rollen jetzt:", newMember.roles.cache.map(r => `${r.name}: ${r.id}`));
+    const hcRoleId = process.env.HC_MEMBER_ROLE_ID;
+    const hcChannelId = process.env.HC_BANNER_CHANNEL_ID;
 
-  const hcRoleId = process.env.HC_MEMBER_ROLE_ID;
+    console.log("HC_ROLE_ID:", hcRoleId);
+    console.log("HC_CHANNEL_ID:", hcChannelId);
 
-  const hadRole = oldMember.roles.cache.has(hcRoleId);
-  const hasRole = newMember.roles.cache.has(hcRoleId);
+    const hadRole = oldMember.roles.cache.has(hcRoleId);
+    const hasRole = newMember.roles.cache.has(hcRoleId);
 
-  if (!hadRole && hasRole) {
-    const channel = await client.channels.fetch(process.env.HC_BANNER_CHANNEL_ID);
+    console.log("Hatte HC vorher:", hadRole);
+    console.log("Hat HC jetzt:", hasRole);
 
-    const button = new ButtonBuilder()
-      .setCustomId(`create_hc_banner_${newMember.id}`)
-      .setLabel("Banner erstellen")
-      .setStyle(ButtonStyle.Success);
+    if (!hadRole && hasRole) {
+      const channel = await client.channels.fetch(hcChannelId);
 
-    const row = new ActionRowBuilder().addComponents(button);
+      if (!channel) {
+        console.error("HC Banner Channel nicht gefunden.");
+        return;
+      }
 
-    await channel.send({
-      content: `🎉 ${newMember}, du bist jetzt **Member**! Klicke auf den Button und gib deinen gewünschten Banner-Namen ein.`,
-      components: [row]
-    });
+      const button = new ButtonBuilder()
+        .setCustomId(`create_hc_banner_${newMember.id}`)
+        .setLabel("Banner erstellen")
+        .setStyle(ButtonStyle.Success);
+
+      const row = new ActionRowBuilder().addComponents(button);
+
+      await channel.send({
+        content: `🎉 ${newMember}, du bist jetzt **Member**! Klicke auf den Button und gib deinen gewünschten Banner-Namen ein.`,
+        components: [row]
+      });
+
+      console.log("HC Banner Button gesendet.");
+    }
+  } catch (error) {
+    console.error("Fehler beim HC-Member-System:", error);
   }
 });
 
