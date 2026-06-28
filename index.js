@@ -57,7 +57,7 @@ async function createWelcomeBanner(member) {
     <svg width="1536" height="512">
       <style>
         .username {
-          fill: #7CFF3A;
+          fill: #8d1717;
           font-size: 46px;
           font-weight: 800;
           letter-spacing: 14px;
